@@ -1,0 +1,40 @@
+{
+  "name": "mcp-openrouter-search",
+  "version": "0.1.0",
+  "description": "MCP server + CLI for web search via OpenRouter API",
+  "bin": {
+    "mcp-openrouter-search": "./bin/mcp-openrouter-search"
+  },
+  "scripts": {
+    "postinstall": "node scripts/postinstall.js",
+    "preuninstall": "node scripts/uninstall.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Kukkerem/mcp-openrouter-search"
+  },
+  "keywords": [
+    "mcp",
+    "openrouter",
+    "search",
+    "model-context-protocol"
+  ],
+  "license": "MIT",
+  "preferGlobal": true,
+  "engines": {
+    "node": ">=18"
+  },
+  "files": [
+    "bin/",
+    "scripts/"
+  ],
+  "os": [
+    "darwin",
+    "linux",
+    "win32"
+  ],
+  "cpu": [
+    "x64",
+    "arm64"
+  ]
+}

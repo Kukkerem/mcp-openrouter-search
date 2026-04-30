@@ -1,0 +1,19 @@
+services:
+  mcp-openrouter-search:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: runtime
+    container_name: mcp-openrouter-search
+    environment:
+      - OPENROUTER_API_KEY=${OPENROUTER_API_KEY}
+      # or use a file:
+      # - OPENROUTER_API_KEY_FILE=/run/secrets/openrouter-api-key
+    secrets:
+      - openrouter-api-key
+    # stdio mode is default; for HTTP testing you can override entrypoint:
+    # command: ["search", "--query", "test"]
+
+secrets:
+  openrouter-api-key:
+    file: ./openrouter-api-key.txt
