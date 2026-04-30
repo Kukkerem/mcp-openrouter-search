@@ -28,6 +28,8 @@ type SearchOutput struct {
 	WebSearchRequests int                   `json:"web_search_requests" jsonschema:"number of web search requests made"`
 }
 
+var Version string
+
 var rootCmd = &cobra.Command{
 	Use:   "mcp-openrouter-search",
 	Short: "MCP server for web search via OpenRouter API",
@@ -37,13 +39,14 @@ var rootCmd = &cobra.Command{
 }
 
 func Execute() error {
+	rootCmd.Version = Version
 	return rootCmd.Execute()
 }
 
 func runServer() error {
 	server := mcp.NewServer(&mcp.Implementation{
 		Name:    "mcp-openrouter-search",
-		Version: "0.1.0",
+		Version: Version,
 	}, &mcp.ServerOptions{
 		Instructions: "Web search via OpenRouter API. Use search_web for current information beyond training data. Returns answers with source citations. Prefer over static knowledge for time-sensitive queries. Use allowed_domains/excluded_domains to scope searches. Use search_context_size=low for cheaper queries or high for thorough research.",
 	})
@@ -86,14 +89,10 @@ func handleSearch(ctx context.Context, req *mcp.CallToolRequest, input SearchInp
 	}
 
 	if input.AllowedDomains != "" {
-		for _, d := range splitDomains(input.AllowedDomains) {
-			params.AllowedDomains = append(params.AllowedDomains, d)
-		}
+		params.AllowedDomains = splitByComma(input.AllowedDomains)
 	}
 	if input.ExcludedDomains != "" {
-		for _, d := range splitDomains(input.ExcludedDomains) {
-			params.ExcludedDomains = append(params.ExcludedDomains, d)
-		}
+		params.ExcludedDomains = splitByComma(input.ExcludedDomains)
 	}
 
 	resp, err := openrouter.DoSearch(config.OpenRouterEndpoint, apiKey, config.DefaultModel, params, config.DefaultTimeoutMs)
@@ -116,16 +115,6 @@ func handleSearch(ctx context.Context, req *mcp.CallToolRequest, input SearchInp
 		Model:             output.Model,
 		WebSearchRequests: output.WebSearchRequests,
 	}, nil
-}
-
-func splitDomains(s string) []string {
-	var result []string
-	for _, d := range splitByComma(s) {
-		if d != "" {
-			result = append(result, d)
-		}
-	}
-	return result
 }
 
 func splitByComma(s string) []string {

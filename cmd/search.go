@@ -43,14 +43,13 @@ func init() {
 	searchCmd.Flags().BoolVar(&flagJSON, "json", false, "Emit structured JSON")
 	searchCmd.Flags().BoolVar(&flagRaw, "raw", false, "Emit raw OpenRouter response JSON")
 
+	searchCmd.MarkFlagRequired("query")
+
 	rootCmd.AddCommand(searchCmd)
 }
 
 func runSearch(cmd *cobra.Command, args []string) error {
 	query, _ := cmd.Flags().GetString("query")
-	if query == "" {
-		return fmt.Errorf("--query is required")
-	}
 
 	apiKey, err := config.ResolveAPIKey(flagAPIKeyFile)
 	if err != nil {
