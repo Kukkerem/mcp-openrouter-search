@@ -126,6 +126,18 @@ This project uses GitHub Actions for CI and automated releases.
   - Builds Go binaries for Linux, macOS, Windows (amd64 + arm64) via GoReleaser
   - Builds and pushes multi-platform Docker images to `ghcr.io/kukkerem/mcp-openrouter-search`
   - Publishes the npm package
+- **Dependabot** (`.github/dependabot.yml`): Monitors and auto-PRs updates for:
+  - Go modules (`go.mod`)
+  - GitHub Actions
+  - Nix flakes (`flake.lock`)
+  
+  **Note:** When Dependabot updates Go modules, the `vendorHash` in `flake.nix` must be recalculated manually:
+  ```bash
+  # Update go.sum and recalculate vendorHash
+  go mod tidy
+  nix build .#  # Will fail with the expected new hash
+  # Copy the new hash from the error message and update flake.nix
+  ```
 
 To trigger a release:
 

@@ -1,0 +1,70 @@
+version: 2
+# NOTE: When Dependabot updates Go modules, vendorHash in flake.nix must be
+# recalculated manually (see README Nix section).
+updates:
+  # Go modules
+  - package-ecosystem: "gomod"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+      day: "monday"
+      time: "09:00"
+    commit-message:
+      prefix: "chore"
+      include: "scope"
+    open-pull-requests-limit: 10
+    labels:
+      - "dependencies"
+      - "go"
+    reviewers:
+      - "Kukkerem"
+    # Group minor/patch updates to reduce noise
+    groups:
+      minor-patch:
+        patterns:
+          - "*"
+        update-types:
+          - "minor"
+          - "patch"
+      security:
+        patterns:
+          - "*"
+        applies-to: "security-updates"
+
+  # Nix flakes
+  - package-ecosystem: "nix"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+      day: "monday"
+      time: "09:00"
+    commit-message:
+      prefix: "chore"
+      include: "scope"
+    open-pull-requests-limit: 5
+    labels:
+      - "dependencies"
+      - "nix"
+    reviewers:
+      - "Kukkerem"
+    # NOTE: Dependabot supports public repos only for Nix.
+    # Private flake inputs require manual updates.
+  - package-ecosystem: "github-actions"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+      day: "monday"
+      time: "09:00"
+    commit-message:
+      prefix: "ci"
+      include: "scope"
+    open-pull-requests-limit: 5
+    labels:
+      - "dependencies"
+      - "ci"
+    reviewers:
+      - "Kukkerem"
+    groups:
+      actions:
+        patterns:
+          - "*"
