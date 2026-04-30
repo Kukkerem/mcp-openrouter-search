@@ -85,6 +85,75 @@ mcp-openrouter-search search --query "latest Go generics features"
     --raw                          Emit raw OpenRouter response JSON
 ```
 
+## Docker
+
+Build and run locally:
+
+```bash
+docker build -t mcp-openrouter-search .
+docker run -e OPENROUTER_API_KEY="sk-or-v1-..." mcp-openrouter-search search --query "test"
+```
+
+Or use Docker Compose with a key file:
+
+```bash
+# Create a key file
+echo "sk-or-v1-..." > openrouter-api-key.txt
+docker compose up
+```
+
+Pull the prebuilt image from GitHub Container Registry:
+
+```bash
+docker pull ghcr.io/kukkerem/mcp-openrouter-search:latest
+```
+
+## NPM Install
+
+Install as a global npm package (downloads the correct binary for your platform):
+
+```bash
+npm install -g mcp-openrouter-search
+mcp-openrouter-search search --query "test"
+```
+
+## CI/CD
+
+This project uses GitHub Actions for CI and automated releases.
+
+- **CI** (`.github/workflows/ci.yml`): Runs tests, lint, and Nix flake checks on every push and PR.
+- **Release** (`.github/workflows/release.yml`): Triggered on version tags (`v*`):
+  - Builds Go binaries for Linux, macOS, Windows (amd64 + arm64) via GoReleaser
+  - Builds and pushes multi-platform Docker images to `ghcr.io/kukkerem/mcp-openrouter-search`
+  - Publishes the npm package
+
+To trigger a release:
+
+```bash
+git tag v0.1.0
+git push origin v0.1.0
+```
+
+## Releasing
+
+### Prerequisites
+
+- Install [GoReleaser](https://goreleaser.com/)
+- Export `GITHUB_TOKEN` with `repo` and `write:packages` scopes
+- Log in to ghcr.io: `docker login ghcr.io -u USERNAME`
+
+### Manual release
+
+```bash
+goreleaser release --clean
+```
+
+### Nix build
+
+```bash
+nix build .#
+```
+
 ## API Key Resolution
 
 1. `OPENROUTER_API_KEY` environment variable

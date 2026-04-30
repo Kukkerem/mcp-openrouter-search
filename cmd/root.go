@@ -12,20 +12,20 @@ import (
 )
 
 type SearchInput struct {
-	Query             string `json:"query" jsonschema:"required,description=Search question or research task"`
-	Engine            string `json:"engine,omitempty" jsonschema:"description=Search engine: auto, native, exa, firecrawl, parallel. Default: auto"`
-	MaxResults        *int   `json:"max_results,omitempty" jsonschema:"description=Results per search call, 1-25. Default: 5"`
-	MaxTotalResults   *int   `json:"max_total_results,omitempty" jsonschema:"description=Cap total results across multi-search loops"`
-	SearchContextSize string `json:"search_context_size,omitempty" jsonschema:"description=Search context size: low, medium, high. Default: medium"`
-	AllowedDomains    string `json:"allowed_domains,omitempty" jsonschema:"description=Comma-separated domains to restrict search to"`
-	ExcludedDomains   string `json:"excluded_domains,omitempty" jsonschema:"description=Comma-separated domains to exclude"`
+	Query             string `json:"query" jsonschema:"search question or research task"`
+	Engine            string `json:"engine,omitempty" jsonschema:"search engine: auto, native, exa, firecrawl, parallel. Default: auto"`
+	MaxResults        *int   `json:"max_results,omitempty" jsonschema:"results per search call, 1-25. Default: 5"`
+	MaxTotalResults   *int   `json:"max_total_results,omitempty" jsonschema:"cap total results across multi-search loops"`
+	SearchContextSize string `json:"search_context_size,omitempty" jsonschema:"search context size: low, medium, high. Default: medium"`
+	AllowedDomains    string `json:"allowed_domains,omitempty" jsonschema:"comma-separated domains to restrict search to"`
+	ExcludedDomains   string `json:"excluded_domains,omitempty" jsonschema:"comma-separated domains to exclude"`
 }
 
 type SearchOutput struct {
-	Answer            string                `json:"answer"`
-	Citations         []openrouter.Citation `json:"citations"`
-	Model             string                `json:"model"`
-	WebSearchRequests int                   `json:"web_search_requests"`
+	Answer            string                `json:"answer" jsonschema:"the search answer text"`
+	Citations         []openrouter.Citation `json:"citations" jsonschema:"source citations from the search"`
+	Model             string                `json:"model" jsonschema:"the model used for the search"`
+	WebSearchRequests int                   `json:"web_search_requests" jsonschema:"number of web search requests made"`
 }
 
 var rootCmd = &cobra.Command{
@@ -44,7 +44,9 @@ func runServer() error {
 	server := mcp.NewServer(&mcp.Implementation{
 		Name:    "mcp-openrouter-search",
 		Version: "0.1.0",
-	}, nil)
+	}, &mcp.ServerOptions{
+		Instructions: "Web search via OpenRouter API. Use search_web for current information beyond training data. Returns answers with source citations. Prefer over static knowledge for time-sensitive queries. Use allowed_domains/excluded_domains to scope searches. Use search_context_size=low for cheaper queries or high for thorough research.",
+	})
 
 	mcp.AddTool(server, &mcp.Tool{
 		Name:        "search_web",

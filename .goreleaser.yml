@@ -1,0 +1,77 @@
+version: 2
+
+builds:
+  - main: .
+    binary: mcp-openrouter-search
+    env:
+      - CGO_ENABLED=0
+    goos:
+      - linux
+      - darwin
+      - windows
+    goarch:
+      - amd64
+      - arm64
+    ldflags:
+      - -s -w -X main.version={{.Version}}
+
+archives:
+  - name_template: >-
+      {{ .ProjectName }}_
+      {{- .Version }}_
+      {{- .Os }}_
+      {{- if eq .Arch "amd64" }}x86_64
+      {{- else if eq .Arch "arm64" }}aarch64
+      {{- else }}{{ .Arch }}{{ end }}
+
+checksum:
+  name_template: checksums.txt
+
+sboms:
+  - artifacts: archive
+
+dockers:
+  - image_templates:
+      - "ghcr.io/kukkerem/mcp-openrouter-search:{{ .Version }}-amd64"
+    dockerfile: Dockerfile
+    use: buildx
+    build_flag_templates:
+      - "--platform=linux/amd64"
+      - "--label=org.opencontainers.image.title={{ .ProjectName }}"
+      - "--label=org.opencontainers.image.version={{ .Version }}"
+      - "--label=org.opencontainers.image.created={{ .Date }}"
+      - "--label=org.opencontainers.image.revision={{ .FullCommit }}"
+      - "--label=org.opencontainers.image.licenses=MIT"
+  - image_templates:
+      - "ghcr.io/kukkerem/mcp-openrouter-search:{{ .Version }}-arm64"
+    dockerfile: Dockerfile
+    use: buildx
+    build_flag_templates:
+      - "--platform=linux/arm64"
+      - "--label=org.opencontainers.image.title={{ .ProjectName }}"
+      - "--label=org.opencontainers.image.version={{ .Version }}"
+      - "--label=org.opencontainers.image.created={{ .Date }}"
+      - "--label=org.opencontainers.image.revision={{ .FullCommit }}"
+      - "--label=org.opencontainers.image.licenses=MIT"
+
+docker_manifests:
+  - name_template: "ghcr.io/kukkerem/mcp-openrouter-search:{{ .Version }}"
+    image_templates:
+      - "ghcr.io/kukkerem/mcp-openrouter-search:{{ .Version }}-amd64"
+      - "ghcr.io/kukkerem/mcp-openrouter-search:{{ .Version }}-arm64"
+  - name_template: "ghcr.io/kukkerem/mcp-openrouter-search:latest"
+    image_templates:
+      - "ghcr.io/kukkerem/mcp-openrouter-search:{{ .Version }}-amd64"
+      - "ghcr.io/kukkerem/mcp-openrouter-search:{{ .Version }}-arm64"
+
+changelog:
+  sort: asc
+  filters:
+    exclude:
+      - "^docs:"
+      - "^test:"
+
+release:
+  github:
+    owner: Kukkerem
+    name: mcp-openrouter-search

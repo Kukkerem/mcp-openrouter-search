@@ -115,8 +115,8 @@ func BuildOutput(resp *ChatResponse, params SearchParameters) *SearchOutput {
 		Usage:             resp.Usage,
 	}
 
-	if webSearchRequests == 0 {
-		output.Warning = "OpenRouter reported zero web search requests."
+	if webSearchRequests == 0 && len(output.Citations) == 0 && output.Answer != "" {
+		output.Warning = "OpenRouter reported zero web search requests and no citations were returned. The model may have answered from training data."
 	}
 
 	return output
