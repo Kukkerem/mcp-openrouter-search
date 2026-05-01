@@ -30,37 +30,21 @@ checksum:
 sboms:
   - artifacts: archive
 
-dockers:
-  - image_templates:
-      - "ghcr.io/kukkerem/mcp-openrouter-search:{{ .Version }}-amd64"
-    use: buildx
-    build_flag_templates:
-      - "--platform=linux/amd64"
-      - "--label=org.opencontainers.image.title={{ .ProjectName }}"
-      - "--label=org.opencontainers.image.version={{ .Version }}"
-      - "--label=org.opencontainers.image.created={{ .Date }}"
-      - "--label=org.opencontainers.image.revision={{ .FullCommit }}"
-      - "--label=org.opencontainers.image.licenses=MIT"
-  - image_templates:
-      - "ghcr.io/kukkerem/mcp-openrouter-search:{{ .Version }}-arm64"
-    use: buildx
-    build_flag_templates:
-      - "--platform=linux/arm64"
-      - "--label=org.opencontainers.image.title={{ .ProjectName }}"
-      - "--label=org.opencontainers.image.version={{ .Version }}"
-      - "--label=org.opencontainers.image.created={{ .Date }}"
-      - "--label=org.opencontainers.image.revision={{ .FullCommit }}"
-      - "--label=org.opencontainers.image.licenses=MIT"
-
-docker_manifests:
-  - name_template: "ghcr.io/kukkerem/mcp-openrouter-search:{{ .Version }}"
-    image_templates:
-      - "ghcr.io/kukkerem/mcp-openrouter-search:{{ .Version }}-amd64"
-      - "ghcr.io/kukkerem/mcp-openrouter-search:{{ .Version }}-arm64"
-  - name_template: "ghcr.io/kukkerem/mcp-openrouter-search:latest"
-    image_templates:
-      - "ghcr.io/kukkerem/mcp-openrouter-search:{{ .Version }}-amd64"
-      - "ghcr.io/kukkerem/mcp-openrouter-search:{{ .Version }}-arm64"
+dockers_v2:
+  - images:
+      - "ghcr.io/kukkerem/mcp-openrouter-search"
+    tags:
+      - "v{{ .Version }}"
+      - "latest"
+    platforms:
+      - linux/amd64
+      - linux/arm64
+    labels:
+      org.opencontainers.image.title: "{{ .ProjectName }}"
+      org.opencontainers.image.version: "{{ .Version }}"
+      org.opencontainers.image.created: "{{ .Date }}"
+      org.opencontainers.image.revision: "{{ .FullCommit }}"
+      org.opencontainers.image.licenses: "MIT"
 
 changelog:
   sort: asc
