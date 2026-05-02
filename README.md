@@ -162,6 +162,28 @@ goreleaser release --clean
 
 ### Nix build
 
+Use the project Cachix cache to avoid rebuilding cached package outputs:
+
+```bash
+nix build \
+  --extra-substituters https://mcp-openrouter-search.cachix.org \
+  --extra-trusted-public-keys mcp-openrouter-search.cachix.org-1:S6bkAuk57MmpxzXAjaKAmmpesRStzfWHe8Fu3rYfkJw= \
+  .#
+```
+
+Or add it to your Nix configuration:
+
+```nix
+{
+  nix.settings = {
+    substituters = [ "https://mcp-openrouter-search.cachix.org" ];
+    trusted-public-keys = [
+      "mcp-openrouter-search.cachix.org-1:S6bkAuk57MmpxzXAjaKAmmpesRStzfWHe8Fu3rYfkJw="
+    ];
+  };
+}
+```
+
 ```bash
 nix build .#
 ```
