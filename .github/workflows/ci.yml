@@ -63,6 +63,11 @@ jobs:
           store_path=$(nix build --no-link --print-build-logs --print-out-paths .#packages.x86_64-linux.default)
           echo "store_path=$store_path" >> "$GITHUB_OUTPUT"
 
+      - name: Push package output
+        if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+        run: |
+          cachix push mcp-openrouter-search '${{ steps.build-nix-package.outputs.store_path }}'
+
       - name: Pin latest package output
         if: github.event_name == 'push' && github.ref == 'refs/heads/main'
         run: |
