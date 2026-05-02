@@ -43,5 +43,27 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - uses: DeterminateSystems/nix-installer-action@main
-      - run: nix flake check
+
+      - name: Install Nix
+        uses: cachix/install-nix-action@v31
+
+      - name: Use Cachix
+        uses: cachix/cachix-action@v17
+        with:
+          name: mcp-openrouter-search
+          authToken: ${{ secrets.CACHIX_AUTH_TOKEN }}
+          skipPush: ${{ github.event_name != 'push' || github.ref != 'refs/heads/main' }}
+
+      - name: Check flake
+        run: nix flake check
+
+      - name: Build Nix package
+        id: build-nix-package
+        run: |
+          store_path=$(nix build --no-link --print-build-logs --print-out-paths .#packages.x86_64-linux.default)
+          echo "store_path=$store_path" >> "$GITHUB_OUTPUT"
+
+      - name: Pin latest package output
+        if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+        run: |
+          cachix pin mcp-openrouter-search mcp-openrouter-search-latest '${{ steps.build-nix-package.outputs.store_path }}' --keep-revisions 1
