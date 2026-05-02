@@ -1,5 +1,5 @@
 {
-  "name": "mcp-openrouter-search",
+  "name": "@kukkerem/mcp-openrouter-search",
   "version": "0.1.0",
   "description": "MCP server + CLI for web search via OpenRouter API",
   "bin": {
@@ -11,7 +11,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/Kukkerem/mcp-openrouter-search"
+    "url": "https://github.com/Kukkerem/mcp-openrouter-search.git"
   },
   "keywords": [
     "mcp",
@@ -20,6 +20,9 @@
     "model-context-protocol"
   ],
   "license": "MIT",
+  "publishConfig": {
+    "registry": "https://npm.pkg.github.com"
+  },
   "preferGlobal": true,
   "engines": {
     "node": ">=18"

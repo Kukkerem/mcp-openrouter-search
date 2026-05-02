@@ -108,13 +108,44 @@ Pull the prebuilt image from GitHub Container Registry:
 docker pull ghcr.io/kukkerem/mcp-openrouter-search:latest
 ```
 
-## NPM Install
+## GitHub Packages Install
 
-Install as a global npm package (downloads the correct binary for your platform):
+Install as a global npm package from GitHub Packages. The package downloads the correct binary for your platform during install.
+
+Configure npm to use GitHub Packages for the `@kukkerem` scope:
 
 ```bash
-npm install -g mcp-openrouter-search
+npm config set @kukkerem:registry https://npm.pkg.github.com
+```
+
+If npm asks for authentication, create a GitHub personal access token (classic) with `read:packages`, then run:
+
+```bash
+npm login --scope=@kukkerem --registry=https://npm.pkg.github.com --auth-type=legacy
+```
+
+Install the package:
+
+```bash
+npm install -g @kukkerem/mcp-openrouter-search
 mcp-openrouter-search search --query "test"
+```
+
+### MCP setup via npm package
+
+After the global install, configure your MCP client to run the installed binary:
+
+```json
+{
+  "mcpServers": {
+    "openrouter-search": {
+      "command": "mcp-openrouter-search",
+      "env": {
+        "OPENROUTER_API_KEY": "sk-or-v1-..."
+      }
+    }
+  }
+}
 ```
 
 ## CI/CD
@@ -125,7 +156,9 @@ This project uses GitHub Actions for CI and automated releases.
 - **Release** (`.github/workflows/release.yml`): Triggered on version tags (`v*`):
   - Builds Go binaries for Linux, macOS, Windows (amd64 + arm64) via GoReleaser
   - Builds and pushes multi-platform Docker images to `ghcr.io/kukkerem/mcp-openrouter-search`
-  - Publishes the npm package
+  - Publishes the GitHub Packages npm package
+  - Uses `GITHUB_TOKEN` for GitHub Packages publishing; no npmjs token is required
+  - First GitHub Packages publishes default to private; adjust package visibility/access in GitHub after publishing if needed
 - **Dependabot** (`.github/dependabot.yml`): Monitors and auto-PRs updates for:
   - Go modules (`go.mod`)
   - GitHub Actions
