@@ -50,6 +50,22 @@ With an API key file:
 }
 ```
 
+With a longer OpenRouter request timeout:
+
+```json
+{
+  "mcpServers": {
+    "openrouter-search": {
+      "command": "mcp-openrouter-search",
+      "args": ["--timeout-ms", "120000"],
+      "env": {
+        "OPENROUTER_API_KEY": "sk-or-v1-..."
+      }
+    }
+  }
+}
+```
+
 ### Tool: `search_web`
 
 | Parameter             | Type   | Required | Default    | Description                                      |

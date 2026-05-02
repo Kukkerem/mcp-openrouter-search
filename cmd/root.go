@@ -30,12 +30,18 @@ type SearchOutput struct {
 
 var Version string
 
+var flagServerTimeout int
+
 var rootCmd = &cobra.Command{
 	Use:   "mcp-openrouter-search",
 	Short: "MCP server for web search via OpenRouter API",
 	RunE: func(cmd *cobra.Command, args []string) error {
 		return runServer()
 	},
+}
+
+func init() {
+	rootCmd.Flags().IntVar(&flagServerTimeout, "timeout-ms", config.DefaultTimeoutMs, "Request timeout in milliseconds")
 }
 
 func Execute() error {
@@ -95,7 +101,7 @@ func handleSearch(ctx context.Context, req *mcp.CallToolRequest, input SearchInp
 		params.ExcludedDomains = splitByComma(input.ExcludedDomains)
 	}
 
-	resp, err := openrouter.DoSearch(config.OpenRouterEndpoint, apiKey, config.DefaultModel, params, config.DefaultTimeoutMs)
+	resp, err := openrouter.DoSearch(config.OpenRouterEndpoint, apiKey, config.DefaultModel, params, flagServerTimeout)
 	if err != nil {
 		return nil, SearchOutput{}, err
 	}
