@@ -208,6 +208,8 @@ This project uses GitHub Actions for CI and automated releases.
   # Copy the new hash from the error message and update flake.nix
   ```
 
+  **Note:** When cutting a release, also bump the `version` field in `flake.nix` to match the tag. Without this, consumers who build from the flake will get a binary that reports the wrong version and Nix will always rebuild from source (the store path won't match the Cachix-cached output).
+
 To trigger a release:
 
 ```bash
@@ -319,7 +321,7 @@ in
 
 ### Cachix binary cache
 
-Add the cache to skip rebuilding:
+Without this, Nix will build the package from source on every machine that consumes the flake. Add the cache to substitute from the prebuilt binary instead:
 
 ```nix
 nix.settings = {
