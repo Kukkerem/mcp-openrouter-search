@@ -66,6 +66,22 @@ With a longer OpenRouter request timeout:
 }
 ```
 
+With a specific model:
+
+```json
+{
+  "mcpServers": {
+    "openrouter-search": {
+      "command": "mcp-openrouter-search",
+      "args": ["--model", "openai/gpt-4o-mini"],
+      "env": {
+        "OPENROUTER_API_KEY": "sk-or-v1-..."
+      }
+    }
+  }
+}
+```
+
 ### Tool: `search_web`
 
 | Parameter             | Type   | Required | Default    | Description                                      |
@@ -87,19 +103,23 @@ mcp-openrouter-search search --query "latest Go generics features"
 ### Options
 
 ```
+    --timeout-ms int               Request timeout in milliseconds (default 60000) [global flag]
+
 -q, --query string                 Search question (required)
 -m, --model string                 OpenRouter model id (default "openai/gpt-5-nano")
     --engine string                auto, native, exa, firecrawl, parallel (default "auto")
     --max-results int              Results per search call, 1-25 (default 5)
     --max-total-results int        Cap total results
     --search-context-size string   low, medium, high (default "medium")
-    --allowed-domain string        Restrict to domains (comma-separated)
-    --excluded-domain string       Exclude domains (comma-separated)
+    --allowed-domains string       Restrict to domains (comma-separated)
+    --excluded-domains string      Exclude domains (comma-separated)
     --api-key-file string          Read API key from file
-    --timeout-ms int               Request timeout (default 60000)
     --json                         Emit structured JSON
     --raw                          Emit raw OpenRouter response JSON
 ```
+
+> `--timeout-ms` is a global flag and must be placed before the subcommand:
+> `mcp-openrouter-search --timeout-ms 30000 search --query "..."`
 
 ## Docker
 
