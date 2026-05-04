@@ -26,11 +26,13 @@ type SearchOutput struct {
 	Citations         []openrouter.Citation `json:"citations" jsonschema:"source citations from the search"`
 	Model             string                `json:"model" jsonschema:"the model used for the search"`
 	WebSearchRequests int                   `json:"web_search_requests" jsonschema:"number of web search requests made"`
+	Warning           string                `json:"warning,omitempty" jsonschema:"non-empty when the model may have answered from training data instead of live search"`
 }
 
 var Version string
 
 var flagServerTimeout int
+var flagServerModel string
 
 var rootCmd = &cobra.Command{
 	Use:   "mcp-openrouter-search",
@@ -41,7 +43,8 @@ var rootCmd = &cobra.Command{
 }
 
 func init() {
-	rootCmd.Flags().IntVar(&flagServerTimeout, "timeout-ms", config.DefaultTimeoutMs, "Request timeout in milliseconds")
+	rootCmd.PersistentFlags().IntVar(&flagServerTimeout, "timeout-ms", config.DefaultTimeoutMs, "Request timeout in milliseconds")
+	rootCmd.Flags().StringVar(&flagServerModel, "model", config.DefaultModel, "OpenRouter model id (MCP server mode)")
 }
 
 func Execute() error {
@@ -75,15 +78,24 @@ func handleSearch(ctx context.Context, req *mcp.CallToolRequest, input SearchInp
 	if engine == "" {
 		engine = config.DefaultEngine
 	}
+	if err := config.ValidateEngine(engine); err != nil {
+		return nil, SearchOutput{}, err
+	}
 
 	maxResults := config.DefaultMaxResults
 	if input.MaxResults != nil {
 		maxResults = *input.MaxResults
 	}
+	if maxResults < 1 || maxResults > 25 {
+		return nil, SearchOutput{}, fmt.Errorf("max_results must be between 1 and 25, got %d", maxResults)
+	}
 
 	contextSize := input.SearchContextSize
 	if contextSize == "" {
 		contextSize = config.DefaultContextSize
+	}
+	if err := config.ValidateContextSize(contextSize); err != nil {
+		return nil, SearchOutput{}, err
 	}
 
 	params := openrouter.SearchParameters{
@@ -101,7 +113,7 @@ func handleSearch(ctx context.Context, req *mcp.CallToolRequest, input SearchInp
 		params.ExcludedDomains = splitByComma(input.ExcludedDomains)
 	}
 
-	resp, err := openrouter.DoSearch(config.OpenRouterEndpoint, apiKey, config.DefaultModel, params, flagServerTimeout)
+	resp, err := openrouter.DoSearch(config.OpenRouterEndpoint, apiKey, flagServerModel, params, flagServerTimeout)
 	if err != nil {
 		return nil, SearchOutput{}, err
 	}
@@ -120,6 +132,7 @@ func handleSearch(ctx context.Context, req *mcp.CallToolRequest, input SearchInp
 		Citations:         output.Citations,
 		Model:             output.Model,
 		WebSearchRequests: output.WebSearchRequests,
+		Warning:           output.Warning,
 	}, nil
 }
 

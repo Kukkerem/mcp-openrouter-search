@@ -10,6 +10,7 @@ import (
 )
 
 var (
+	flagQuery       string
 	flagModel       string
 	flagEngine      string
 	flagMaxResults  int
@@ -18,7 +19,6 @@ var (
 	flagAllowed     string
 	flagExcluded    string
 	flagAPIKeyFile  string
-	flagTimeout     int
 	flagJSON        bool
 	flagRaw         bool
 )
@@ -30,16 +30,15 @@ var searchCmd = &cobra.Command{
 }
 
 func init() {
-	searchCmd.Flags().StringP("query", "q", "", "Search question or research task (required)")
+	searchCmd.Flags().StringVarP(&flagQuery, "query", "q", "", "Search question or research task (required)")
 	searchCmd.Flags().StringVarP(&flagModel, "model", "m", config.DefaultModel, "OpenRouter model id")
 	searchCmd.Flags().StringVar(&flagEngine, "engine", config.DefaultEngine, "Search engine: auto, native, exa, firecrawl, parallel")
 	searchCmd.Flags().IntVar(&flagMaxResults, "max-results", config.DefaultMaxResults, "Results per search call, 1-25")
 	searchCmd.Flags().IntVar(&flagMaxTotal, "max-total-results", 0, "Cap total results across multi-search loops")
 	searchCmd.Flags().StringVar(&flagContextSize, "search-context-size", config.DefaultContextSize, "Search context size: low, medium, high")
-	searchCmd.Flags().StringVar(&flagAllowed, "allowed-domain", "", "Restrict search to a domain (comma-separated)")
-	searchCmd.Flags().StringVar(&flagExcluded, "excluded-domain", "", "Exclude a domain (comma-separated)")
+	searchCmd.Flags().StringVar(&flagAllowed, "allowed-domains", "", "Restrict search to domains (comma-separated)")
+	searchCmd.Flags().StringVar(&flagExcluded, "excluded-domains", "", "Exclude domains (comma-separated)")
 	searchCmd.Flags().StringVar(&flagAPIKeyFile, "api-key-file", "", "Read OpenRouter API key from file")
-	searchCmd.Flags().IntVar(&flagTimeout, "timeout-ms", config.DefaultTimeoutMs, "Request timeout in milliseconds")
 	searchCmd.Flags().BoolVar(&flagJSON, "json", false, "Emit structured JSON")
 	searchCmd.Flags().BoolVar(&flagRaw, "raw", false, "Emit raw OpenRouter response JSON")
 
@@ -49,10 +48,20 @@ func init() {
 }
 
 func runSearch(cmd *cobra.Command, args []string) error {
-	query, _ := cmd.Flags().GetString("query")
+	query := flagQuery
 
 	apiKey, err := config.ResolveAPIKey(flagAPIKeyFile)
 	if err != nil {
+		return err
+	}
+
+	if err := config.ValidateEngine(flagEngine); err != nil {
+		return err
+	}
+	if flagMaxResults < 1 || flagMaxResults > 25 {
+		return fmt.Errorf("max_results must be between 1 and 25, got %d", flagMaxResults)
+	}
+	if err := config.ValidateContextSize(flagContextSize); err != nil {
 		return err
 	}
 
@@ -74,7 +83,7 @@ func runSearch(cmd *cobra.Command, args []string) error {
 		params.ExcludedDomains = append(params.ExcludedDomains, d)
 	}
 
-	resp, err := openrouter.DoSearch(config.OpenRouterEndpoint, apiKey, flagModel, params, flagTimeout)
+	resp, err := openrouter.DoSearch(config.OpenRouterEndpoint, apiKey, flagModel, params, flagServerTimeout)
 	if err != nil {
 		return err
 	}
