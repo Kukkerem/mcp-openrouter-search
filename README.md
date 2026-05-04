@@ -257,6 +257,90 @@ Or add it to your Nix configuration:
 nix build .#
 ```
 
+## Nix / Home Manager
+
+### Add as flake input
+
+```nix
+# flake.nix
+inputs = {
+  mcp-openrouter-search = {
+    url = "github:Kukkerem/mcp-openrouter-search";
+    inputs.nixpkgs.follows = "nixpkgs";
+  };
+};
+```
+
+Pass it into your Home Manager config:
+
+```nix
+outputs = { self, nixpkgs, home-manager, mcp-openrouter-search, ... }: {
+  homeConfigurations."user@host" = home-manager.lib.homeManagerConfiguration {
+    extraSpecialArgs = { inherit mcp-openrouter-search; };
+    modules = [ ./home.nix ];
+  };
+};
+```
+
+### Configure as MCP server in OpenCode
+
+In your `home.nix` (or any imported module):
+
+```nix
+{ pkgs, mcp-openrouter-search, ... }:
+let
+  openrouterSearchPackage = mcp-openrouter-search.packages.${pkgs.system}.default;
+in
+{
+  programs.opencode = {
+    enable = true;
+    settings = {
+      mcp = {
+        openrouter-search = {
+          command = pkgs.lib.getExe openrouterSearchPackage;
+          args = [ "--timeout-ms" "120000" ];
+          env = {
+            OPENROUTER_API_KEY_FILE = "/run/secrets/openrouter-api-key";
+          };
+        };
+      };
+    };
+  };
+}
+```
+
+### With sops-nix for secret management
+
+```nix
+{ config, pkgs, mcp-openrouter-search, ... }:
+let
+  openrouterSearchPackage = mcp-openrouter-search.packages.${pkgs.system}.default;
+in
+{
+  sops.secrets.openrouter-api-key = { };
+
+  programs.opencode.settings.mcp.openrouter-search = {
+    command = pkgs.lib.getExe openrouterSearchPackage;
+    env = {
+      OPENROUTER_API_KEY_FILE = config.sops.secrets.openrouter-api-key.path;
+    };
+  };
+}
+```
+
+### Cachix binary cache
+
+Add the cache to skip rebuilding:
+
+```nix
+nix.settings = {
+  substituters = [ "https://mcp-openrouter-search.cachix.org" ];
+  trusted-public-keys = [
+    "mcp-openrouter-search.cachix.org-1:S6bkAuk57MmpxzXAjaKAmmpesRStzfWHe8Fu3rYfkJw="
+  ];
+};
+```
+
 ## API Key Resolution
 
 1. `OPENROUTER_API_KEY` environment variable
