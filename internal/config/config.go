@@ -20,6 +20,24 @@ var (
 	ValidContextSizes = []string{"low", "medium", "high"}
 )
 
+func ValidateEngine(s string) error {
+	for _, v := range ValidEngines {
+		if s == v {
+			return nil
+		}
+	}
+	return fmt.Errorf("invalid engine %q: must be one of %v", s, ValidEngines)
+}
+
+func ValidateContextSize(s string) error {
+	for _, v := range ValidContextSizes {
+		if s == v {
+			return nil
+		}
+	}
+	return fmt.Errorf("invalid search_context_size %q: must be one of %v", s, ValidContextSizes)
+}
+
 func ResolveAPIKey(keyFile string) (string, error) {
 	if key := os.Getenv("OPENROUTER_API_KEY"); key != "" {
 		return strings.TrimSpace(key), nil
