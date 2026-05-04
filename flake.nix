@@ -20,7 +20,7 @@
       {
         packages.default =
           let
-            version = "0.1.3";
+            version = "0.1.4";
           in
           pkgs.buildGoModule {
             pname = "mcp-openrouter-search";
