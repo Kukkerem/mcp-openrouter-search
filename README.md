@@ -231,7 +231,7 @@ goreleaser release --clean
 
 ### Nix build
 
-Use the project Cachix cache to avoid rebuilding cached package outputs:
+Use the project Cachix cache to avoid rebuilding:
 
 ```bash
 nix build \
@@ -240,18 +240,7 @@ nix build \
   .#
 ```
 
-Or add it to your Nix configuration:
-
-```nix
-{
-  nix.settings = {
-    substituters = [ "https://mcp-openrouter-search.cachix.org" ];
-    trusted-public-keys = [
-      "mcp-openrouter-search.cachix.org-1:S6bkAuk57MmpxzXAjaKAmmpesRStzfWHe8Fu3rYfkJw="
-    ];
-  };
-}
-```
+To add the cache permanently, see [Cachix binary cache](#cachix-binary-cache) in the Nix / Home Manager section.
 
 ```bash
 nix build .#
