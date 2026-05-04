@@ -213,9 +213,10 @@ This project uses GitHub Actions for CI and automated releases.
 To trigger a release:
 
 ```bash
-git tag v0.1.0
-git push origin v0.1.0
+./scripts/release.sh v0.1.4
 ```
+
+This script bumps `version` in `flake.nix`, commits, tags, and pushes — the GitHub Actions release workflow runs automatically on the pushed tag.
 
 ## Releasing
 
