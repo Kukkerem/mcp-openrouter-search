@@ -32,7 +32,7 @@ var searchCmd = &cobra.Command{
 func init() {
 	searchCmd.Flags().StringVarP(&flagQuery, "query", "q", "", "Search question or research task (required)")
 	searchCmd.Flags().StringVarP(&flagModel, "model", "m", config.DefaultModel, "OpenRouter model id")
-	searchCmd.Flags().StringVar(&flagEngine, "engine", config.DefaultEngine, "Search engine: auto, native, exa, firecrawl, parallel")
+	searchCmd.Flags().StringVar(&flagEngine, "engine", config.DefaultEngine, "Search engine: auto, native, exa, firecrawl, parallel, perplexity")
 	searchCmd.Flags().IntVar(&flagMaxResults, "max-results", config.DefaultMaxResults, "Results per search call, 1-25")
 	searchCmd.Flags().IntVar(&flagMaxTotal, "max-total-results", 0, "Cap total results across multi-search loops")
 	searchCmd.Flags().StringVar(&flagContextSize, "search-context-size", config.DefaultContextSize, "Search context size: low, medium, high")

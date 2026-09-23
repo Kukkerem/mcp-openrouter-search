@@ -13,7 +13,7 @@ import (
 
 type SearchInput struct {
 	Query             string `json:"query" jsonschema:"search question or research task"`
-	Engine            string `json:"engine,omitempty" jsonschema:"search engine: auto, native, exa, firecrawl, parallel. Default: auto"`
+	Engine            string `json:"engine,omitempty" jsonschema:"search engine: auto, native, exa, firecrawl, parallel, perplexity. Default: auto"`
 	MaxResults        *int   `json:"max_results,omitempty" jsonschema:"results per search call, 1-25. Default: 5"`
 	MaxTotalResults   *int   `json:"max_total_results,omitempty" jsonschema:"cap total results across multi-search loops"`
 	SearchContextSize string `json:"search_context_size,omitempty" jsonschema:"search context size: low, medium, high. Default: medium"`

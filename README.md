@@ -87,7 +87,7 @@ With a specific model:
 | Parameter             | Type   | Required | Default    | Description                                      |
 |-----------------------|--------|----------|------------|--------------------------------------------------|
 | `query`               | string | yes      | —          | Search question or research task                  |
-| `engine`              | string | no       | `auto`     | `auto`, `native`, `exa`, `firecrawl`, `parallel`  |
+| `engine`              | string | no       | `auto`     | `auto`, `native`, `exa`, `firecrawl`, `parallel`, `perplexity` |
 | `max_results`         | number | no       | `5`        | Results per search call, 1-25                     |
 | `max_total_results`   | number | no       | —          | Cap total results across multi-search loops        |
 | `search_context_size` | string | no       | `medium`   | `low`, `medium`, `high`                           |
@@ -107,7 +107,7 @@ mcp-openrouter-search search --query "latest Go generics features"
 
 -q, --query string                 Search question (required)
 -m, --model string                 OpenRouter model id (default "openai/gpt-5-nano")
-    --engine string                auto, native, exa, firecrawl, parallel (default "auto")
+    --engine string                auto, native, exa, firecrawl, parallel, perplexity (default "auto")
     --max-results int              Results per search call, 1-25 (default 5)
     --max-total-results int        Cap total results
     --search-context-size string   low, medium, high (default "medium")

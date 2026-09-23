@@ -16,7 +16,7 @@ const (
 )
 
 var (
-	ValidEngines      = []string{"auto", "native", "exa", "firecrawl", "parallel"}
+	ValidEngines      = []string{"auto", "native", "exa", "firecrawl", "parallel", "perplexity"}
 	ValidContextSizes = []string{"low", "medium", "high"}
 )
 

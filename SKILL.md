@@ -22,7 +22,7 @@ Use `search_web` from the `mcp-openrouter-search` MCP server.
 | Parameter | Default | Notes |
 |-----------|---------|-------|
 | `query` | required | Natural language search question |
-| `engine` | auto | auto, native, exa, firecrawl, parallel |
+| `engine` | auto | auto, native, exa, firecrawl, parallel, perplexity |
 | `max_results` | 5 | 1-25, results per search call |
 | `search_context_size` | medium | low (cheaper), medium, high (thorough) |
 | `allowed_domains` | none | Comma-separated domains to include |
