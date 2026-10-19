@@ -45,13 +45,16 @@ type ChatResponse struct {
 	Usage Usage `json:"usage"`
 }
 
+type ServerToolUse struct {
+	WebSearchRequests int `json:"web_search_requests"`
+}
+
 type Usage struct {
-	PromptTokens     int `json:"prompt_tokens"`
-	CompletionTokens int `json:"completion_tokens"`
-	TotalTokens      int `json:"total_tokens"`
-	ServerToolUse    *struct {
-		WebSearchRequests int `json:"web_search_requests"`
-	} `json:"server_tool_use,omitempty"`
+	PromptTokens         int            `json:"prompt_tokens"`
+	CompletionTokens     int            `json:"completion_tokens"`
+	TotalTokens          int            `json:"total_tokens"`
+	ServerToolUse        *ServerToolUse `json:"server_tool_use,omitempty"`
+	ServerToolUseDetails *ServerToolUse `json:"server_tool_use_details,omitempty"`
 }
 
 type Citation struct {

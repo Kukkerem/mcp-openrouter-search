@@ -95,6 +95,19 @@ func extractCitationFromMap(m map[string]any) *Citation {
 	return result
 }
 
+// webSearchRequestCount reads the live OpenRouter usage field, then the old one.
+// The API renamed usage.server_tool_use to usage.server_tool_use_details and
+// leaves the old field null, which made every search look like it never ran.
+func webSearchRequestCount(usage Usage) int {
+	if usage.ServerToolUseDetails != nil {
+		return usage.ServerToolUseDetails.WebSearchRequests
+	}
+	if usage.ServerToolUse != nil {
+		return usage.ServerToolUse.WebSearchRequests
+	}
+	return 0
+}
+
 func BuildOutput(resp *ChatResponse, params SearchParameters) *SearchOutput {
 	var msg Message
 	if len(resp.Choices) > 0 {
@@ -102,10 +115,7 @@ func BuildOutput(resp *ChatResponse, params SearchParameters) *SearchOutput {
 	}
 
 	answer := ExtractMessageText(msg.Content)
-	webSearchRequests := 0
-	if resp.Usage.ServerToolUse != nil {
-		webSearchRequests = resp.Usage.ServerToolUse.WebSearchRequests
-	}
+	webSearchRequests := webSearchRequestCount(resp.Usage)
 
 	output := &SearchOutput{
 		Answer:            answer,

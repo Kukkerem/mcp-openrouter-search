@@ -20,9 +20,7 @@ func TestDoSearch(t *testing.T) {
 			PromptTokens:     10,
 			CompletionTokens: 20,
 			TotalTokens:      30,
-			ServerToolUse: &struct {
-				WebSearchRequests int `json:"web_search_requests"`
-			}{WebSearchRequests: 1},
+			ServerToolUse:    &ServerToolUse{WebSearchRequests: 1},
 		},
 	}
 

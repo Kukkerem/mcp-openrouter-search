@@ -47,9 +47,7 @@ func TestBuildOutput(t *testing.T) {
 			}},
 		},
 		Usage: Usage{
-			ServerToolUse: &struct {
-				WebSearchRequests int `json:"web_search_requests"`
-			}{WebSearchRequests: 2},
+			ServerToolUse: &ServerToolUse{WebSearchRequests: 2},
 		},
 	}
 
@@ -72,6 +70,26 @@ func TestBuildOutput(t *testing.T) {
 	}
 	if output.Warning != "" {
 		t.Errorf("warning = %q, want empty", output.Warning)
+	}
+}
+
+func TestBuildOutput_ServerToolUseDetails(t *testing.T) {
+	raw := []byte(`{
+		"model": "openai/gpt-5-nano",
+		"choices": [{"message": {"role": "assistant", "content": "fully operational"}}],
+		"usage": {"server_tool_use_details": {"web_search_requests": 4}}
+	}`)
+	var resp ChatResponse
+	if err := json.Unmarshal(raw, &resp); err != nil {
+		t.Fatal(err)
+	}
+
+	output := BuildOutput(&resp, SearchParameters{})
+	if output.WebSearchRequests != 4 {
+		t.Fatalf("web_search_requests = %d, want 4", output.WebSearchRequests)
+	}
+	if output.Warning != "" {
+		t.Fatalf("warning = %q", output.Warning)
 	}
 }
 
